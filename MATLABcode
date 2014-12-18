@@ -1,0 +1,72 @@
+% Guass_Seidel.m
+% Author: Kyle Holt
+
+% function inputs:
+% A: square matrix
+% b: vector solution for unknown matrix 
+% err_tollerance: how close you would like to be to the solution
+% max_iter: the max number of iterations allowed
+
+function x = Gauss_Seidel(A,b,err_tolerance,max_iter)
+
+% initializes max iteration if not called with function
+if nargin < 4
+    max_iter = 50;   
+end
+
+% confirms matrix A is a square matrix
+[m,n] = size(A);
+
+if m~=n
+    error('Must be a square square matrix');
+end
+
+% stores the value of A and initializes the iteration for later use
+temp_A = A;
+iteration = 0;
+
+% sets diagonal of temp to zeros for initial guesses of x
+for P = 1:n
+    temp_A(P,P) = 0;
+    x(P) = 0;    
+end
+
+% changes x from an array to a column matrix
+x = x';
+
+% divides matrix elements by each element on the diagonal
+for L = 1:n
+    temp_A(L,1:n) = temp_A(L,1:n)/A(L,L);   
+end
+
+% divides vector "b" by each element on the diagonal
+for k = 1:n;
+    b(k) = b(k) / A(k,k);    
+end
+
+%  initializes percent error
+Percent_err = zeros(n);
+
+for j = 1:n;
+    Percent_err(j) = 100;    
+end
+
+% iterates until either the desired error or max iterations is reached
+while max(Percent_err) >=err_tolerance | iteration <= max_iter;
+    
+    % saves current value of x
+    x_old = x;
+    
+    %  Gauss Seidel Method
+    for i = 1:n;
+        x(i) = b(i)-temp_A(i,:)*x;
+        
+        % calculates percent error when x is not zero
+        if x(i) ~= 0
+            Percent_err(i) = 100* abs((x(i) - x_old(i)) /x(i));           
+        end
+    end
+    
+    % adds to iteration
+    iteration = iteration + 1;    
+end
